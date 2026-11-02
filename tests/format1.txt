@@ -1,0 +1,13 @@
+M = (Q, Σ, δ, q0, F) 
+Q = {q1, q2, q3, q4, Trap} 
+Σ = {a, b, c} 
+δ = Q × Σ → Q 
+q0 = q1 
+F = {q4} 
+
+δ   a   b   c
+q1  q2  q3  Trap
+q2  q4  Trap    q2
+q3  Trap    q4  q3
+q4  Trap    Trap    Trap
+Trap    Trap    Trap    Trap
