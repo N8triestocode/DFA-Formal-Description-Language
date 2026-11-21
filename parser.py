@@ -357,3 +357,4 @@ def parse(text, parse_anyway=False):
         return ParseResult(None, lex_errors, [err.as_tuple()])
     return ParseResult(program, lex_errors, [])
 
+

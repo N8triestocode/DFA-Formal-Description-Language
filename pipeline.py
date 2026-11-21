@@ -10,7 +10,4 @@ def pipeliner_run(text):
     if not semantic_result.ok:
         return None, semantic_result.errors
 
-    # Code Generation
-    # code = code_generation(ast)
-
     return parsed.program, None
