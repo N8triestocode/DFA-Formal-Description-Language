@@ -1,7 +1,6 @@
-#Member 1 of 3 Nathan Bowen
+#Lexer.py
 
 
-import token
 
 import ply.lex as lex
 #Necessary Tokens involved in the lexer
@@ -18,28 +17,6 @@ reserved = {
     'Sigma': 'SIGMA',
     'SIGMA': 'SIGMA',
 }
-
-#test cases for the lexer, including various valid and invalid inputs to test the lexer's functionality and error handling.
-tests = [
-    #'delta',
-    #'q0 = q1',
-    #'δ(q1,ε)=q1',
-    #'δ = Q * Σ → Q',
-    #'deltas',
-    #'a\n\n  b'
-    #'q₀ = q₁',
-    #'a\r\nb',
-    #'δ = Q × Σ → Q',
-    #'12',
-    #'1abc',
-    #'123',
-    #'\n\na',
-    #'a',
-    #'a\n',
-    #'a @ b',
-    #'!comment test',
-    #''
-]
 
 #function to get tokens from the input text, handling leading newlines and appending an EOF token at the end. 
 # It also collects any lexer errors encountered during tokenization.
@@ -127,19 +104,6 @@ def run_file(path):
 
 #Main block to execute the lexer on the test cases and specified files, printing the tokens and their details for each input text.
 if __name__ == "__main__":
-    for text in tests:
-        print("\n", repr(text))
-        toks, errs = get_tokens(text)
-        if errs:
-            print("Lexer Errors:", errs)
-        for tok in toks:
-
-            print("Token: ", tok.type,
-                "\tValue: ", repr(tok.value),
-                "\tLine: ", tok.lineno,
-                "\tColumn: ", column(lexer.lexdata, tok.lexpos))
-            
-        
-    run_file("tests/format1.txt")
-    run_file("tests/format2.txt")
+    run_file("samples/format1.txt")
+    run_file("samples/format2.txt")
             
