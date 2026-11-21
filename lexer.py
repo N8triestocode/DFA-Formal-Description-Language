@@ -1,3 +1,6 @@
+#Member 1 of 3 Nathan Bowen
+
+
 import token
 
 import ply.lex as lex
@@ -86,6 +89,7 @@ t_ignore_COMMENT = r'\![^\n]*'
 
 #Error handling for the lexer, capturing illegal characters and their positions in the input text.
 lexer_errors = []
+
 def t_error(t):
     ch = t.value[0]
     message = f"Illegal character '{ch}' at line {t.lexer.lineno}, column {column(t.lexer.lexdata, t.lexpos)}"
@@ -126,11 +130,16 @@ if __name__ == "__main__":
     for text in tests:
         print("\n", repr(text))
         toks, errs = get_tokens(text)
+        if errs:
+            print("Lexer Errors:", errs)
         for tok in toks:
+
             print("Token: ", tok.type,
-                    "\tValue: ", repr(tok.value),
-                    "\tLine: ", tok.lineno,
-                    "\tColumn: ", column(lexer.lexdata, tok.lexpos))
+                "\tValue: ", repr(tok.value),
+                "\tLine: ", tok.lineno,
+                "\tColumn: ", column(lexer.lexdata, tok.lexpos))
+            
+        
     run_file("tests/format1.txt")
     run_file("tests/format2.txt")
             
