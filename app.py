@@ -1,6 +1,6 @@
-# app.py  
-from pathlib import Path
+#File shared among all members
 
+from pathlib import Path
 import streamlit as st
 
 from pipeline import pipeliner_run
