@@ -2,20 +2,21 @@
 School Assignment using PLY and other components
 
 
-This project requires Python 3.10 to 3.13.
+## Requirements
 
-Steps to run
+Python 3.10 to 3.13 (3.12 recommended). Tick **Add python.exe to PATH** when installing.
+
+## Running the project
+
 ```
-git clone https://github.com/N8triestocode/DFA-Formal-Description-Language.git (Ignore if using zipped folder)
-
+git clone https://github.com/N8triestocode/DFA-Formal-Description-Language.git
 cd DFA-Formal-Description-Language
-
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
 ```
 
-Run in terminal:
-```
-streamlit run app.py
-```
+**No Git?** Click **Code → Download ZIP** on GitHub, unzip it, and open the **inner** folder that contains `app.py` (zips often nest a folder inside a folder of the same name). Then run the last two commands.
 
-The app opens at `http://localhost:8501`. Pick a sample in the sidebar and click **Run**.
+ The `python -m` form is used because `pip` and `streamlit` are often not on PATH on Windows.
+
+Tests: `python -m unittest discover -v`
