@@ -6,7 +6,7 @@ This project requires Python 3.10 to 3.13.
 
 Steps to run
 ```
-git clone https://github.com/N8triestocode/DFA-Formal-Description-Language.git
+git clone https://github.com/N8triestocode/DFA-Formal-Description-Language.git (Ignore if using zipped folder)
 
 cd DFA-Formal-Description-Language
 
