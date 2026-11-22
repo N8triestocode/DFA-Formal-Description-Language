@@ -1,9 +1,10 @@
 # DFA-Formal-Description-Language
-School Assignment using PLY and other components
-Done by:
-Nathan Bowen 2306494
-Scott Spence 2100755
-Joshaun Gibson 2210196 
+School Assignment using PLY and other components\
+
+**Group Members**
+- Nathan Bowen 2306494
+- Scott Spence 2100755
+- Joshaun Gibson 2210196 
 
 ## Requirements
 
