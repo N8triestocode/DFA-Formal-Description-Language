@@ -1,4 +1,4 @@
-#Shared
+#File shared among all members
 
 from parser import parse
 from semantic import analyze_semantics

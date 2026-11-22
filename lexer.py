@@ -1,6 +1,4 @@
-#Lexer.py
-
-
+#Done by Nathan Bowen 2306494
 
 import ply.lex as lex
 #Necessary Tokens involved in the lexer
