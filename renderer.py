@@ -1,6 +1,6 @@
 #Shared assisted by LLM
 def dfa_to_dot(dfa):
-    # Merge parallel edges: (src, dst) -> [symbols]
+    #Merge parallel edges: (src, dst) -> [symbols]
     edges = {}
     for (src, sym), dst in dfa["transitions"].items():
         edges.setdefault((src, dst), []).append(sym)
@@ -25,7 +25,7 @@ def dfa_to_dot(dfa):
     return "\n".join(lines)
 
 def program_to_dfa(program):
-    """Convert the parser's program object into the dict dfa_to_dot expects."""
+    #Convert the parser's program object into the dict dfa_to_dot expects.
     states = [str(s) for s in program.states]
     alphabet = [str(a) for a in program.alphabet]
 

@@ -17,7 +17,7 @@ reserved = {
 }
 
 #function to get tokens from the input text, handling leading newlines and appending an EOF token at the end. 
-# It also collects any lexer errors encountered during tokenization.
+#It also collects any lexer errors encountered during tokenization.
 def get_tokens(text):
     lexer_errors.clear()      
     lexer.lineno = 1

@@ -7,12 +7,12 @@ from pipeline import pipeliner_run
 
 FORMAT1_DFA = (Path(__file__).parent / "tests" / "format1.txt").read_text(encoding="utf-8")
 VALID_DFA = """M = ({q0}, {a}, δ, q0, {q0})
-δ(q0,a)=q0
-"""
+δ(q0,a)=q0"""
+
 
 INCOMPLETE_DFA = """M = ({q0, q1}, {a}, δ, q0, {q1})
-δ(q0,a)=q1
-"""
+δ(q0,a)=q1"""
+
 
 
 class TestPipeline(unittest.TestCase):

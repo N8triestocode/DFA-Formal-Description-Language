@@ -98,10 +98,8 @@ TOKEN_DESC = {
     'EOF': "end of file",
 }
 
+#Parser
 
-# ----------------------------------------------------------------------------
-# Parser
-# ----------------------------------------------------------------------------
 
 class Parser:
     def __init__(self, tokens, text):
@@ -109,7 +107,7 @@ class Parser:
         self.text = text
         self.position = 0
 
-    # ---- token helpers ------------------------------------------------------
+    #token helpers
 
     def peek(self):
         #Current token, without consuming it. Never runs past EOF.
@@ -152,7 +150,7 @@ class Parser:
         while self.peek().type == 'NWLINE':
             self.advance()
 
-    # building blocks 
+    #building blocks 
 
     def parse_idenlist(self):
         """<idenlist> ::= IDEN (COMMA IDEN)*"""
@@ -171,7 +169,7 @@ class Parser:
         self.expect('RBRACE')
         return names
 
-    #  Format 1 pieces 
+    #Format 1 pieces 
 
     def parse_statedef(self):
         placeholder = self.expect_name()
@@ -239,7 +237,7 @@ class Parser:
        
         prog = DFAProgram(format=1)
 
-        # IDEN COMMA SIGMA COMMA DELTA COMMA IDEN COMMA IDEN RPAREN NWLINE
+        #IDEN COMMA SIGMA COMMA DELTA COMMA IDEN COMMA IDEN RPAREN NWLINE
         prog.states_ref = self.expect_name()
         self.expect('COMMA')
         self.expect('SIGMA')
@@ -271,7 +269,7 @@ class Parser:
         prog.table_header, prog.table_rows = self.parse_table()
         return prog
 
-    # Format 2 pieces 
+    #Format 2 pieces 
 
     def parse_inlinetran(self):
      
@@ -306,7 +304,7 @@ class Parser:
         self.expect('NWLINE')
         self.skip_newlines()
 
-        # <inlinetran>+  (one required, then loop while the next token is DELTA)
+        #<inlinetran>+  (one required, then loop while the next token is DELTA)
         prog.transitions.append(self.parse_inlinetran())
         while True:
             self.skip_newlines()
@@ -315,7 +313,7 @@ class Parser:
             prog.transitions.append(self.parse_inlinetran())
         return prog
 
-    #  Top level
+    #Top level
 
     def parse_program(self):
     
@@ -340,7 +338,7 @@ class Parser:
 
 
 
-# Wrapper for the IDE
+#Wrapper for the IDE
 
 def parse(text, parse_anyway=False):
     

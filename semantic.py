@@ -1,8 +1,7 @@
 #Done by Joshaun Gibson 2210196
-"""
-Semantic Analyzer for the DFA Formal Description Language.
-Performs semantic checks on the parsed AST (Program object).
-"""
+"""Semantic Analyzer for the DFA Formal Description Language.
+Performs semantic checks on the parsed AST (Program object)."""
+
 class SemanticError(Exception):
     def __init__(self, message, line=1, column=1):
         super().__init__(message)
@@ -25,9 +24,8 @@ class SemanticResult:
 
 
 def analyze_semantics(prog):
-    """
-    Performs comprehensive semantic analysis on a parsed DFA Program.
-    """
+    
+    #Performs comprehensive semantic analysis on a parsed DFA Program.
     result = SemanticResult()
 
     # 1. Extract sets and components
@@ -36,27 +34,27 @@ def analyze_semantics(prog):
     start_state = prog.start
     final_states = set(prog.finals)
 
-    # Check that Q is non-empty
+    #Check that Q is non-empty
     if not states:
         result.add_error("Semantic Error: Set of states (Q) cannot be empty.", 1, 1)
 
-    # Check that start state is in Q
+    #Check that start state is in Q
     if start_state and start_state not in states:
         result.add_error(f"Semantic Error: Start state '{start_state}' is not defined in Q.", 1, 1)
 
-    # Check that all final states are in Q
+    #Check that all final states are in Q
     for f_state in final_states:
         if f_state not in states:
             result.add_error(f"Semantic Error: Final state '{f_state}' is not defined in Q.", 1, 1)
 
-    # Map transitions: state -> {symbol: target_state}
+    #Map transitions: state -> {symbol: target_state}
     transition_map = {q: {} for q in states}
 
     if prog.format == 1:
-        # Format 1: Table rows
+        #Format 1: Table rows
         header_symbols = prog.table_header
 
-        # Validate header symbols belong to alphabet Σ
+        #Validate header symbols belong to alphabet Σ
         for sym in header_symbols:
             if sym not in alphabet:
                 result.add_error(f"Semantic Error: Transition table header symbol '{sym}' is not in alphabet Σ.", 1, 1)
@@ -79,7 +77,7 @@ def analyze_semantics(prog):
                         f"Semantic Error: Target state '{target}' for transition ({state}, {sym}) is not defined in Q.",
                         1, 1)
 
-                # Check for duplicate / non-deterministic transitions
+                #Check for duplicate / non-deterministic transitions
                 if sym in transition_map[state]:
                     result.add_error(
                         f"Semantic Error: Non-deterministic transition detected. Multiple transitions for ({state}, {sym}).",
@@ -88,14 +86,14 @@ def analyze_semantics(prog):
                     transition_map[state][sym] = target
 
     elif prog.format == 2:
-        # Format 2: Inline transitions
+        #Format 2: Inline transitions
         for tr in prog.transitions:
             st = tr.state
             sym = tr.symbol
             target = tr.target
             line, col = tr.position
 
-            # Check epsilon rule
+            #Check epsilon rule
             if sym in ('ε', 'eps', 'epsilon'):
                 result.add_error(
                     f"Semantic Error: Illegal epsilon transition δ({st}, {sym}) = {target}. DFAs cannot have epsilon transitions.",
@@ -110,7 +108,7 @@ def analyze_semantics(prog):
                 result.add_error(f"Semantic Error: Target state '{target}' in transition is not defined in Q.", line,
                                  col)
 
-            # Check determinism
+            #Check determinism
             if st in transition_map:
                 if sym in transition_map[st]:
                     result.add_error(f"Semantic Error: Non-deterministic transition detected for ({st}, {sym}).", line,
@@ -118,7 +116,7 @@ def analyze_semantics(prog):
                 else:
                     transition_map[st][sym] = target
 
-    # 3. Completeness Check: Every state must have a transition defined for EVERY symbol in alphabet Σ
+    #Completeness Check: Every state must have a transition defined for EVERY symbol in alphabet Σ
     for q in states:
         for sym in alphabet:
             if sym not in transition_map.get(q, {}):

@@ -102,9 +102,7 @@ class TestBuildingBlocks(unittest.TestCase):
             P("{a b}").parse_set()
 
 
-# ----------------------------------------------------------------------------
-# Format 1 pieces
-# ----------------------------------------------------------------------------
+#Format 1 pieces
 
 class TestFormat1Pieces(unittest.TestCase):
     def test_statedef(self):
@@ -200,9 +198,7 @@ class TestFormat1Pieces(unittest.TestCase):
         self.assertEqual(p.peek().type, "EOF")
 
 
-# ----------------------------------------------------------------------------
 # Format 2 pieces
-# ----------------------------------------------------------------------------
 
 class TestFormat2Pieces(unittest.TestCase):
     def test_inlinetran(self):
@@ -238,9 +234,8 @@ class TestFormat2Pieces(unittest.TestCase):
             P("δ(q1,a)=\n").parse_inlinetran()
 
 
-# ----------------------------------------------------------------------------
-# Whole programs
-# ----------------------------------------------------------------------------
+
+#Whole programs
 
 class TestFormat1Program(unittest.TestCase):
     def test_sample_program(self):
@@ -391,9 +386,8 @@ class TestFormat2Program(unittest.TestCase):
         self.assertEqual(res.syntax_errors[0][1], 3)
 
 
-# ----------------------------------------------------------------------------
-# Top level, wrapper, lexical errors
-# ----------------------------------------------------------------------------
+
+#Top level, wrapper, lexical errors
 
 class TestProgramHeader(unittest.TestCase):
     def test_empty_input(self):
