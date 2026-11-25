@@ -3,9 +3,11 @@
 from dataclasses import dataclass, field
 from typing import List, NamedTuple, Optional, Tuple
 
+#Takes in token list from lexer and original source text
+#Parses it into a DFAProgram object, or returns errors if the input is invalid
 from lexer import get_tokens, column as column_of
 
-
+#catches errors in parsing and returns them to the IDE for display
 class ParseError(Exception):
 
     def __init__(self, message, line, column):
@@ -16,11 +18,11 @@ class ParseError(Exception):
 
     def __str__(self):
         return f"{self.message} at line {self.line}, column {self.column}"
-
+    #returns tuple of error message(format the same as rest of program)
     def as_tuple(self):
         return (str(self), self.line, self.column)
 
-
+#class for names that keeps track of their position in the source text
 class Name(str):
     def __new__(cls, value, line=0, column=0):
         obj = super().__new__(cls, value)
@@ -28,7 +30,7 @@ class Name(str):
         obj.column = column
         return obj
 
-
+#one transition in the DFA plus line it comes from for errors 
 class Transition(NamedTuple):
     state: Name
     symbol: Name
@@ -37,7 +39,9 @@ class Transition(NamedTuple):
 
 
 @dataclass
+#output of the parser; contains all the information about the DFA. 
 class DFAProgram:
+    #default values for the fields
     name: Optional[Name] = None          # M in  M = (...)
     format: int = 0                      # 1 (multi-line / table) or 2 (one-line)
 
@@ -53,6 +57,7 @@ class DFAProgram:
     finals: List[Name] = field(default_factory=list)
 
     # Format 1 definition lines: the placeholder written on the left/right
+    #format 1 keeps placeholder names so sematic analysis can check that the right names are used in the right places
     states_name: Optional[Name] = None   # Q in  Q = {...}
     delta_domain: Optional[Name] = None  # Q in  δ = Q × Σ → Q  (left)
     delta_codomain: Optional[Name] = None  # Q in  δ = Q × Σ → Q (right)
@@ -68,6 +73,7 @@ class DFAProgram:
 
 
 @dataclass
+#what the parser returns to ide either a DFAProgram or a list of errors
 class ParseResult:
     program: Optional[DFAProgram]
     lexical_errors: list            # [(message, line, column), ...]
@@ -78,10 +84,11 @@ class ParseResult:
         return list(self.lexical_errors) + list(self.syntax_errors)
 
     @property
+    #only returns true if the program is valid and there are no errors
     def ok(self):
         return self.program is not None and not self.errors
 
-
+# aliases for token types so errors are easy to read 
 TOKEN_DESC = {
     'IDEN': "a name",
     'EQUALS': "'='",
@@ -100,14 +107,16 @@ TOKEN_DESC = {
 
 #Parser
 
-
+#holds token list and position  every method reads tokens
 class Parser:
+    #tokens from get tokens and source text for working out columns 
     def __init__(self, tokens, text):
         self.tokens = tokens
         self.text = text
+        #index of current token in the list
         self.position = 0
 
-    #token helpers
+    #token helpers 
 
     def peek(self):
         #Current token, without consuming it. Never runs past EOF.
@@ -120,9 +129,11 @@ class Parser:
             self.position += 1
         return tok
 
+    #build a parse error at current token with message 
     def error_at(self, tok, message):
         return ParseError(message, tok.lineno, column_of(self.text, tok.lexpos))
 
+    #how to describe a token in an error message; used by expect() and error_at()
     def describe(self, tok):
         if tok.type == 'EOF':
             return "end of file"
@@ -136,6 +147,7 @@ class Parser:
         if tok.type != token_type:
             message = (f"Expected {TOKEN_DESC.get(token_type, token_type)} "
                        f"but found {self.describe(tok)}")
+            #hint when closed bracket is missing 
             if token_type in ('RBRACE', 'RPAREN'):
                 message += " (check that every opening bracket is closed)"
             raise self.error_at(tok, message)
@@ -152,18 +164,22 @@ class Parser:
 
     #building blocks 
 
+    #parse a list of names separated by commas, e.g. "q0, q1, q2"
     def parse_idenlist(self):
         """<idenlist> ::= IDEN (COMMA IDEN)*"""
         names = [self.expect_name()]
+        #the while loop allows for zero or more additional names after the first
         while self.peek().type == 'COMMA':
             self.advance()
             names.append(self.expect_name())
         return names
 
+    #parse a set of names enclosed in braces, e.g. "{q0, q1, q2}"
     def parse_set(self):
         """<set> ::= LBRACE [ <idenlist> ] RBRACE"""
         self.expect('LBRACE')
         names = []
+        #only parse an idenlist if the next token is an IDEN; otherwise it's an empty set
         if self.peek().type == 'IDEN':
             names = self.parse_idenlist()
         self.expect('RBRACE')
@@ -232,6 +248,16 @@ class Parser:
                 break
             rows.append(self.parse_tablerow())
         return header, rows
+    #desugar the table into a list of transitions for format 1
+    def desugar_table(self, prog):
+        for state, targets in prog.table_rows:
+            if len(targets) != len(prog.table_header):
+                continue
+            for symbol, target in zip(prog.table_header, targets):
+                position = (target.line, target.column)
+                prog.transitions.append(
+                    Transition(state, symbol, target, position)
+                )
 
     def parse_format1(self):
        
@@ -267,6 +293,7 @@ class Parser:
         self.expect('NWLINE')
         self.skip_newlines()
         prog.table_header, prog.table_rows = self.parse_table()
+        self.desugar_table(prog)
         return prog
 
     #Format 2 pieces 
@@ -354,5 +381,3 @@ def parse(text, parse_anyway=False):
     except ParseError as err:
         return ParseResult(None, lex_errors, [err.as_tuple()])
     return ParseResult(program, lex_errors, [])
-
-

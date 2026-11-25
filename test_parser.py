@@ -256,6 +256,10 @@ class TestFormat1Program(unittest.TestCase):
         self.assertEqual(len(prog.table_rows), 5)
         self.assertEqual(prog.table_rows[0], ("q1", ["q2", "q3", "Trap"]))
         self.assertEqual(prog.table_rows[4], ("Trap", ["Trap", "Trap", "Trap"]))
+        self.assertEqual(len(prog.transitions), 15)
+        self.assertEqual(prog.transitions[0], Transition(
+            Name("q1", 9, 1), Name("a", 8, 3), Name("q2", 9, 4), (9, 4)
+        ))
 
     def test_ascii_only(self):
         text = ("M = (Q, sigma, delta, q0, F)\nQ = {q1}\nsigma = {a}\n"
@@ -263,6 +267,14 @@ class TestFormat1Program(unittest.TestCase):
         res = parse(text)
         self.assertTrue(res.ok, res.errors)
         self.assertEqual(res.program.table_rows, [("q1", ["q1"])])
+
+    def test_incomplete_table_row_is_skipped_when_desugaring(self):
+        text = FORMAT1.replace("q1 q2 q3 Trap", "q1 q2", 1)
+        res = parse(text)
+        self.assertTrue(res.ok, res.errors)
+        self.assertEqual(len(res.program.transitions), 12)
+        self.assertTrue(all(transition.state != "q1"
+                            for transition in res.program.transitions))
 
     def test_empty_Q_and_sigma_are_legal_syntax(self):
         text = ("M = (Q, Σ, δ, q0, F)\nQ = {}\nΣ = {}\nδ = Q × Σ → Q\n"
@@ -334,6 +346,15 @@ class TestFormat2Program(unittest.TestCase):
         self.assertEqual(prog.transitions[0].position, (2, 1))
         self.assertEqual(prog.transitions[-1][:3], ("Trap", "c", "Trap"))
         self.assertEqual(prog.states_ref, None)
+
+    def test_format1_and_format2_produce_the_same_transitions(self):
+        format1 = parse(FORMAT1)
+        format2 = parse(FORMAT2)
+        self.assertTrue(format1.ok, format1.errors)
+        self.assertTrue(format2.ok, format2.errors)
+        format1_transitions = {transition[:3] for transition in format1.program.transitions}
+        format2_transitions = {transition[:3] for transition in format2.program.transitions}
+        self.assertEqual(format1_transitions, format2_transitions)
 
     def test_one_per_line(self):
         text = "M = ({q1}, {a}, δ, q1, {q1})\nδ(q1,a)=q1\n"
